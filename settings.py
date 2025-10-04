@@ -33,11 +33,11 @@ USE_POINTS = True
 
 
 DATABASES = {
-    'default': dj_database_url.config(
-        default=environ.get('DATABASE_URL', 'sqlite:///db.sqlite3')
-    )
+    'default': dj_database_url.config(conn_max_age=600, ssl_require=True)
 }
 
+
+dj-database-url
 
 
 ROOMS = [
@@ -60,3 +60,4 @@ Here are some oTree games.
 SECRET_KEY = 'ookawazemi2025'
 
 INSTALLED_APPS = ['otree']
+
