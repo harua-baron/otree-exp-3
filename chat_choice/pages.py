@@ -192,14 +192,12 @@ class ForcedTermination(Page):
         }
     
 
-    
-
-class BreakPage2(Page):
+class BreakPage1(Page):
     timeout_seconds = 10
 
     def is_displayed(self):
-        return self.round_number == 14  # 14セット目の後に表示
-
+        return self.round_number == 7  # 7セット目の後に表示
+    
 
 page_sequence = [
     CooperationPage,
@@ -214,8 +212,9 @@ page_sequence = [
     ResultsWaitPage2,
     Results,
     ForcedTermination,
-    BreakPage2,
+    BreakPage1,
 ]
+
 
 
 
