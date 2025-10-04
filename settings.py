@@ -37,8 +37,6 @@ DATABASES = {
 }
 
 
-dj-database-url
-
 
 ROOMS = [
     dict(
@@ -60,4 +58,5 @@ Here are some oTree games.
 SECRET_KEY = 'ookawazemi2025'
 
 INSTALLED_APPS = ['otree']
+
 
