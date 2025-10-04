@@ -4,7 +4,7 @@ from otree.api import *
 class C(BaseConstants):
     NAME_IN_URL = "chat_choice"
     PLAYERS_PER_GROUP = 4
-    NUM_ROUNDS = 7    #8~14セット分
+    NUM_ROUNDS = 7
     E_CHOICES = list(range(16, 38, 2))  # 16~36の偶数
     Q_CHOICES = [2, 4, 6, 8, 10]
     CHAT_CHOICES = [("C", "協力する"), ("N", "協力しない")]  # チャット選択肢
@@ -12,27 +12,19 @@ class C(BaseConstants):
 
 class Subsession(BaseSubsession):
     def creating_session(self):
-        import random
-        players = self.get_players()
-        n = len(players)
-
-        if n < 8:
-            raise RuntimeError("このアプリ（set2）は最低8人必要です。")
-        if n % 8 != 0:
-            raise RuntimeError(f"参加者数は8の倍数である必要があります（現在 {n} 人）。")
-
-        group_matrix = []
-
-        # 8人単位のブロックごとに処理
-        for i in range(0, n, 8):
-            block = players[i:i+8]
-            random.shuffle(block)  # ← ラウンドごとに毎回シャッフルされる
-            group_matrix.append(block[:4])   # 前半4人
-            group_matrix.append(block[4:])   # 後半4人
-
-        self.set_group_matrix(group_matrix)
-
-
+        if self.round_number == 1:
+            self.group_randomly()
+            # 4人グループごとにペアを作る
+            for group in self.get_groups():
+                players = group.get_players()
+                # ペアを固定して player.vars に保存
+                players[0].partner_id = players[1].id_in_group
+                players[1].partner_id = players[0].id_in_group
+                players[2].partner_id = players[3].id_in_group
+                players[3].partner_id = players[2].id_in_group
+        else:
+            self.group_like_round(1)
+        
 
 class Group(BaseGroup):
     total_e = models.IntegerField()
@@ -133,6 +125,8 @@ class Player(BasePlayer):
     chat_log = models.LongStringField(blank=True, default="")
     timed_out = models.BooleanField(initial=False)
 
+    partner_id = models.IntegerField()
+
     def market(self):
         return 1 if self.id_in_group in [1, 2] else 2
 
@@ -184,6 +178,7 @@ def check_timeout_and_missing_q(group: Group, **kwargs):
         if p.timed_out and p.q == 0:
             group.force_terminate = True
             break
+
 
 
 
